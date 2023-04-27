@@ -1,4 +1,4 @@
- Trabalho SO
+ Trabalho da Unidade Curricular de Simulação e Otimização
 
 # SO
 
