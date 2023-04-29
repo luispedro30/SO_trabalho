@@ -96,6 +96,6 @@ def main(directory) -> None:
     
 if __name__ == "__main__":
     for path, subdirs, files in os.walk(os.path.join("..", "instances", "formatted")):
-        if path.split('..\\instances\\')[1].replace('\\','/') == 'formatted/Lib_1' or path.split('..\\instances\\')[1].replace('\\','/') == 'formatted/Lib_2':
+        if path.split('..\\instances\\')[1].replace('\\','/') != 'formatted':
             main(os.path.join("..", "instances", path.split('..\\instances\\')[1].replace('\\','/')))
 

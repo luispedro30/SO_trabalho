@@ -41,7 +41,8 @@ def main(nameModel,d,s,f,c,numClients,numFacilities):
                                for facility in range(numFacilities) for client in range(numClients)))
     solver.Minimize(solver.Sum(objectiveTerms))
 
-    #solver.set_time_limit(5000)  
+    #Set the limit to 20 minutes
+    solver.set_time_limit(1200000)  
 
     status = solver.Solve()
     
