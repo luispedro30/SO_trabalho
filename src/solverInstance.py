@@ -1,5 +1,5 @@
 from ortools.linear_solver import pywraplp
-
+import cython
 
 def main(customersDemand,facilitiesCapacity,facilitiesOpeningCost,transportationCosts):
     d = customersDemand
@@ -11,7 +11,7 @@ def main(customersDemand,facilitiesCapacity,facilitiesOpeningCost,transportation
     numFacilities = len(transportationCosts[0])
 
     
-    solver = pywraplp.Solver.CreateSolver('SCIP')
+    solver = pywraplp.Solver('SCIP',pywraplp.Solver.SCIP_MIXED_INTEGER_PROGRAMMING)
     if not solver:
         return
 
@@ -21,14 +21,12 @@ def main(customersDemand,facilitiesCapacity,facilitiesOpeningCost,transportation
     x = {}
     for client in range(numClients):
         for facility in range(numFacilities):
-            #x[client, facility] = solver.BoolVar(f'x[{client},{facility}]')
             x[client, facility] = solver.IntVar(0, 1,f'x[{client},{facility}]')
 
     # y[facility] is an array of 0-1 variables, which will be 1
     # if the facility is open.
     y = {}
     for facility in range(numFacilities):
-        #y[facility] = solver.BoolVar(f'y[{facility}]')
         y[facility] = solver.IntVar(0, 1, f'y[{facility}]')
         
     # Constraints
@@ -41,17 +39,19 @@ def main(customersDemand,facilitiesCapacity,facilitiesOpeningCost,transportation
         solver.Add(
             solver.Sum([x[client, facility] * d[client] for client in range(numClients)]) <= 
             s[facility]*y[facility])   
-
+    
+        
+    print("aqui")
     # Objective
     objective_terms = []
     for facility in range(numFacilities):
         for client in range(numClients):
             objective_terms.append(c[client][facility] * x[client,facility])
-    for facility in range(numFacilities):
-        objective_terms.append(f[facility] * y[facility])
+    objective_terms.append(sum(f[facility] * y[facility] for facility in range(numFacilities)))
+    print("aqui2")
     solver.Minimize(solver.Sum(objective_terms))
 
-    solver.set_time_limit(5000)  
+    #solver.set_time_limit(5000)  
 
     status = solver.Solve()
     
@@ -66,7 +66,10 @@ def main(customersDemand,facilitiesCapacity,facilitiesOpeningCost,transportation
         """
     else:
         print('No solution found.')
-    print(f'Time = {solver.WallTime()} ms')
+    print("\nAdvanced usage:")
+    print("Problem solved in %f milliseconds" % solver.wall_time())
+    print("Problem solved in %d iterations" % solver.iterations())
+    print("Problem solved in %d B&B nodes" % solver.nodes())
     with open("test.mps", "w") as out_f:
         mps_text = solver.ExportModelAsLpFormat(False)
         out_f.write(mps_text)
