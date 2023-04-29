@@ -49,9 +49,9 @@ def main(directory) -> None:
         files = (sorted(files, key=lambda s: int(re.search(r'\d+', s).group())))
         nameSheet = path.split('/')[1]
         for name in files:
-            print(name)
+            nameModel = nameSheet+name
             numCustomers, numFacilities, customersDemand,facilitiesCapacity,facilitiesOpeningCost,transportationCosts = readInstances(os.path.join(path, name))
-            solution, time = solverInstance.main(customersDemand,
+            solution, time = solverInstance.main(nameModel,customersDemand,
                     facilitiesCapacity,
                     facilitiesOpeningCost,
                     transportationCosts)
@@ -60,14 +60,7 @@ def main(directory) -> None:
             timeResult.append(time)
             customers.append(numCustomers)
             facilities.append(numFacilities)
-    """
-    numCustomers, numFacilities, customersDemand,facilitiesCapacity,facilitiesOpeningCost,transportationCosts = readInstances(os.path.join("..", "instances", "formatted",
-                                                                                  "Lib_1", "p21"))
-    x1, time1 = solverInstance.main(customersDemand,
-                        facilitiesCapacity,
-                        facilitiesOpeningCost,
-                        transportationCosts)
-    """
+
     for path, subdirs, files in os.walk(directory):
         expectedResults = []
         for name in files:

@@ -1,7 +1,7 @@
 from ortools.linear_solver import pywraplp
 import cython
 
-def main(customersDemand,facilitiesCapacity,facilitiesOpeningCost,transportationCosts):
+def main(nameModel, customersDemand,facilitiesCapacity,facilitiesOpeningCost,transportationCosts):
     d = customersDemand
     s = facilitiesCapacity
     c = transportationCosts
@@ -41,14 +41,13 @@ def main(customersDemand,facilitiesCapacity,facilitiesOpeningCost,transportation
             s[facility]*y[facility])   
     
         
-    print("aqui")
     # Objective
     objective_terms = []
     for facility in range(numFacilities):
         for client in range(numClients):
             objective_terms.append(c[client][facility] * x[client,facility])
     objective_terms.append(sum(f[facility] * y[facility] for facility in range(numFacilities)))
-    print("aqui2")
+    
     solver.Minimize(solver.Sum(objective_terms))
 
     #solver.set_time_limit(5000)  
@@ -57,23 +56,24 @@ def main(customersDemand,facilitiesCapacity,facilitiesOpeningCost,transportation
     
     # Print solution.
     if status == pywraplp.Solver.OPTIMAL or status == pywraplp.Solver.FEASIBLE:
-        print(f'Total cost = {solver.Objective().Value()}\n')
-        """
+        print(f'Total cost = {solver.Objective().Value()}\n')     
         for client in range(numClients):
             for facility in range(numFacilities):
                 if x[client, facility].solution_value() > 0.5:
                     print(f'Worker {client+1} assigned to facility {facility+1}.' + f' Cost = {c[client][facility]}')
-        """
+        
     else:
         print('No solution found.')
+        
     print("\nAdvanced usage:")
     print("Problem solved in %f milliseconds" % solver.wall_time())
     print("Problem solved in %d iterations" % solver.iterations())
     print("Problem solved in %d B&B nodes" % solver.nodes())
-    with open("test.mps", "w") as out_f:
+
+    nameModel = "../Models/"+nameModel+".mps"
+    with open(nameModel, "w") as out_f:
         mps_text = solver.ExportModelAsLpFormat(False)
         out_f.write(mps_text)
     return solver.Objective().Value(), solver.WallTime()
 if __name__ == '__main__':
-
     main()
