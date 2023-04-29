@@ -11,8 +11,8 @@ def main(nameModel,d,s,f,c,numClients,numFacilities):
     # x[worker, task] is an array of 0-1 variables, which will be 1
     # if the worker is assigned to the task.
     x = {}
-    for client in range(numClients):
-        for facility in range(numFacilities):
+    for facility in range(numFacilities):
+        for client in range(numClients):
             x[client, facility] = solver.IntVar(0, 1,f'x[{client},{facility}]')
 
     # y[facility] is an array of 0-1 variables, which will be 1
@@ -31,6 +31,8 @@ def main(nameModel,d,s,f,c,numClients,numFacilities):
         solver.Add(
             solver.Sum([x[client, facility] * d[client] for client in range(numClients)]) <= 
             s[facility]*y[facility])
+    
+    
      
     # Objective
     objectiveTerms = []            
@@ -45,9 +47,9 @@ def main(nameModel,d,s,f,c,numClients,numFacilities):
     
     # Print solution.
     if status == pywraplp.Solver.OPTIMAL or status == pywraplp.Solver.FEASIBLE:
-        print(f'Total cost = {solver.Objective().Value()}\n')     
-        for client in range(numClients):
-            for facility in range(numFacilities):
+        print(f'Total cost = {solver.Objective().Value()}\n') 
+        for facility in range(numFacilities):    
+            for client in range(numClients):
                 if x[client, facility].solution_value() > 0.5:
                     print(f'Worker {client+1} assigned to facility {facility+1}.' + f' Cost = {c[client][facility]}')
         

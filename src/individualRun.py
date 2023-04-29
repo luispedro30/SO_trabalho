@@ -40,7 +40,7 @@ def main(directory) -> None:
     """
 
     numCustomers, numFacilities, customersDemand,facilitiesCapacity,facilitiesOpeningCost,transportationCosts = readInstances(os.path.join("..", "instances", "formatted",
-                                                                                  "Lib_1", "p1"))
+                                                                                  "Lib_1", "p21"))
     x1, time1 = solverInstance.main('p1',customersDemand,
                         facilitiesCapacity,
                         facilitiesOpeningCost,
