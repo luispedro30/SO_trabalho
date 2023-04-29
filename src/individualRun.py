@@ -41,10 +41,12 @@ def main(directory) -> None:
 
     numCustomers, numFacilities, customersDemand,facilitiesCapacity,facilitiesOpeningCost,transportationCosts = readInstances(os.path.join("..", "instances", "formatted",
                                                                                   "Lib_1", "p1"))
-    x1, time1 = solverInstance.main(customersDemand,
+    x1, time1 = solverInstance.main('p1',customersDemand,
                         facilitiesCapacity,
                         facilitiesOpeningCost,
-                        transportationCosts)
+                        transportationCosts,
+                        numCustomers,
+                        numFacilities)
 
     
 if __name__ == "__main__":

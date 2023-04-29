@@ -54,7 +54,9 @@ def main(directory) -> None:
             solution, time = solverInstance.main(nameModel,customersDemand,
                     facilitiesCapacity,
                     facilitiesOpeningCost,
-                    transportationCosts)
+                    transportationCosts,
+                    numCustomers,
+                    numFacilities)
             newFiles.append(name)
             result.append(solution)
             timeResult.append(time)

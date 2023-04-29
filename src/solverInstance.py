@@ -1,16 +1,8 @@
 from ortools.linear_solver import pywraplp
 import cython
 
-def main(nameModel, customersDemand,facilitiesCapacity,facilitiesOpeningCost,transportationCosts):
-    d = customersDemand
-    s = facilitiesCapacity
-    c = transportationCosts
-    f = facilitiesOpeningCost
+def main(nameModel,d,s,f,c,numClients,numFacilities):
 
-    numClients = len(transportationCosts)
-    numFacilities = len(transportationCosts[0])
-
-    
     solver = pywraplp.Solver('SCIP',pywraplp.Solver.SCIP_MIXED_INTEGER_PROGRAMMING)
     if not solver:
         return
@@ -33,22 +25,19 @@ def main(nameModel, customersDemand,facilitiesCapacity,facilitiesOpeningCost,tra
     # The total size of the facilities each client takes on is 1
     for client in range(numClients):
         solver.Add(
-            solver.Sum([x[client, facility] for facility in range(numFacilities)]) == 1)
-
+            solver.Sum([x[client, facility] for facility in range(numFacilities)]) == 1) 
+              
     for facility in range(numFacilities):
         solver.Add(
             solver.Sum([x[client, facility] * d[client] for client in range(numClients)]) <= 
-            s[facility]*y[facility])   
-    
-        
+            s[facility]*y[facility])
+     
     # Objective
-    objective_terms = []
-    for facility in range(numFacilities):
-        for client in range(numClients):
-            objective_terms.append(c[client][facility] * x[client,facility])
-    objective_terms.append(sum(f[facility] * y[facility] for facility in range(numFacilities)))
-    
-    solver.Minimize(solver.Sum(objective_terms))
+    objectiveTerms = []            
+    objectiveTerms.append(sum(f[facility] * y[facility] for facility in range(numFacilities)))
+    objectiveTerms.append(sum(c[client][facility]* x[client,facility] 
+                               for facility in range(numFacilities) for client in range(numClients)))
+    solver.Minimize(solver.Sum(objectiveTerms))
 
     #solver.set_time_limit(5000)  
 
@@ -69,9 +58,8 @@ def main(nameModel, customersDemand,facilitiesCapacity,facilitiesOpeningCost,tra
     print("Problem solved in %f milliseconds" % solver.wall_time())
     print("Problem solved in %d iterations" % solver.iterations())
     print("Problem solved in %d B&B nodes" % solver.nodes())
-
-    nameModel = "../Models/"+nameModel+".mps"
-    with open(nameModel, "w") as out_f:
+    
+    with open("../Models/"+nameModel+".mps", "w") as out_f:
         mps_text = solver.ExportModelAsLpFormat(False)
         out_f.write(mps_text)
     return solver.Objective().Value(), solver.WallTime()
