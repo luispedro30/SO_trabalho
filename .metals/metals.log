@@ -1,0 +1,109 @@
+2023.04.29 15:32:01 INFO  Started: Metals version 0.11.12 in workspace 'D:\Universidade\2º Semestre\Simulação\SO_trabalho' for client Visual Studio Code 1.77.3.
+abr 29, 2023 3:32:01 DA TARDE org.flywaydb.core.internal.license.VersionPrinter printVersionOnly
+INFO: Flyway Community Edition 9.16.3 by Redgate
+abr 29, 2023 3:32:01 DA TARDE org.flywaydb.core.internal.license.VersionPrinter printVersion
+INFO: See release notes here: https://rd.gt/416ObMi
+abr 29, 2023 3:32:01 DA TARDE org.flywaydb.core.internal.license.VersionPrinter printVersion
+INFO: 
+abr 29, 2023 3:32:02 DA TARDE org.flywaydb.core.internal.database.base.BaseDatabaseType createDatabase
+INFO: Database: jdbc:h2:file:D:\Universidade\2º Semestre\Simulação\SO_trabalho\.metals\metals (H2 2.1)
+abr 29, 2023 3:32:02 DA TARDE org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory allAppliedMigrations
+INFO: Schema history table "PUBLIC"."flyway_schema_history" does not exist yet
+abr 29, 2023 3:32:02 DA TARDE org.flywaydb.core.internal.command.DbValidate validate
+INFO: Successfully validated 4 migrations (execution time 00:00.024s)
+abr 29, 2023 3:32:02 DA TARDE org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory create
+INFO: Creating Schema History table "PUBLIC"."flyway_schema_history" ...
+abr 29, 2023 3:32:02 DA TARDE org.flywaydb.core.internal.command.DbMigrate migrateGroup
+INFO: Current version of schema "PUBLIC": << Empty Schema >>
+abr 29, 2023 3:32:02 DA TARDE org.flywaydb.core.internal.command.DbMigrate doMigrateGroup
+INFO: Migrating schema "PUBLIC" to version "1 - Create tables"
+abr 29, 2023 3:32:02 DA TARDE org.flywaydb.core.internal.command.DbMigrate doMigrateGroup
+INFO: Migrating schema "PUBLIC" to version "2 - Server discovery"
+abr 29, 2023 3:32:02 DA TARDE org.flywaydb.core.internal.command.DbMigrate doMigrateGroup
+INFO: Migrating schema "PUBLIC" to version "3 - Jar symbols"
+abr 29, 2023 3:32:02 DA TARDE org.flywaydb.core.internal.command.DbMigrate doMigrateGroup
+INFO: Migrating schema "PUBLIC" to version "4 - Fingerprints"
+abr 29, 2023 3:32:02 DA TARDE org.flywaydb.core.internal.command.DbMigrate logSummary
+INFO: Successfully applied 4 migrations to schema "PUBLIC", now at version v4 (execution time 00:00.113s)
+2023.04.29 15:32:02 INFO  time: initialize in 0.84s
+2023.04.29 15:32:04 WARN  Build server is not auto-connectable.
+2023.04.29 15:32:04 WARN  no build tool detected in workspace 'D:\Universidade\2º Semestre\Simulação\SO_trabalho'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. 
+Exception in thread "pool-1-thread-5" java.lang.OutOfMemoryError: Java heap space
+	at scala.collection.immutable.List.prependedAll(List.scala:156)
+	at scala.collection.immutable.List$.from(List.scala:684)
+	at scala.collection.immutable.List$.from(List.scala:681)
+	at scala.collection.IterableFactory.apply(Factory.scala:103)
+	at scala.collection.IterableFactory.apply$(Factory.scala:103)
+	at scala.collection.immutable.List$.apply(List.scala:681)
+	at scala.meta.internal.tokenizers.LegacyTokenData.floatingVal(LegacyTokenData.scala:98)
+	at scala.meta.internal.tokenizers.LegacyTokenData.doubleVal(LegacyTokenData.scala:109)
+	at scala.meta.internal.tokenizers.LegacyTokenData.doubleVal$(LegacyTokenData.scala:109)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer$$anon$1.doubleVal(ScalametaTokenizer.scala:24)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.pushLegacyToken$1(ScalametaTokenizer.scala:50)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.emitToken$1(ScalametaTokenizer.scala:201)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.loop$1(ScalametaTokenizer.scala:206)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.uncachedTokenize(ScalametaTokenizer.scala:314)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.$anonfun$tokenize$1(ScalametaTokenizer.scala:17)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer$$Lambda$1271/0x00000001006d7040.apply(Unknown Source)
+	at scala.collection.concurrent.TrieMap.getOrElseUpdate(TrieMap.scala:962)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.tokenize(ScalametaTokenizer.scala:17)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer$$anon$2.apply(ScalametaTokenizer.scala:332)
+	at scala.meta.tokenizers.Api$XtensionTokenizeDialectInput.tokenize(Api.scala:25)
+	at scala.meta.tokenizers.Api$XtensionTokenizeInputLike.tokenize(Api.scala:14)
+	at scala.meta.internal.parsers.ScannerTokens$.apply(ScannerTokens.scala:655)
+	at scala.meta.internal.parsers.ScalametaParser.<init>(ScalametaParser.scala:33)
+	at scala.meta.parsers.Parse$$anon$1.apply(Parse.scala:35)
+	at scala.meta.parsers.Api$XtensionParseDialectInput.parse(Api.scala:25)
+	at scala.meta.internal.parsing.Trees.$anonfun$parse$2(Trees.scala:137)
+	at scala.meta.internal.parsing.Trees$$Lambda$1296/0x00000001006f7040.apply(Unknown Source)
+	at scala.Option.map(Option.scala:242)
+	at scala.meta.internal.parsing.Trees.parse(Trees.scala:130)
+	at scala.meta.internal.parsing.Trees.$anonfun$get$1(Trees.scala:39)
+	at scala.meta.internal.parsing.Trees$$Lambda$1282/0x00000001006d0c40.apply(Unknown Source)
+	at scala.Option.orElse(Option.scala:477)
+Exception in thread "pool-1-thread-9" java.lang.OutOfMemoryError: Java heap space
+	at scala.meta.internal.tokenizers.LegacyTokenData.floatingVal(LegacyTokenData.scala:98)
+	at scala.meta.internal.tokenizers.LegacyTokenData.doubleVal(LegacyTokenData.scala:109)
+	at scala.meta.internal.tokenizers.LegacyTokenData.doubleVal$(LegacyTokenData.scala:109)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer$$anon$1.doubleVal(ScalametaTokenizer.scala:24)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.pushLegacyToken$1(ScalametaTokenizer.scala:50)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.emitToken$1(ScalametaTokenizer.scala:201)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.loop$1(ScalametaTokenizer.scala:206)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.uncachedTokenize(ScalametaTokenizer.scala:314)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.$anonfun$tokenize$1(ScalametaTokenizer.scala:17)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer$$Lambda$1271/0x00000001006d7040.apply(Unknown Source)
+	at scala.collection.concurrent.TrieMap.getOrElseUpdate(TrieMap.scala:962)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.tokenize(ScalametaTokenizer.scala:17)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer$$anon$2.apply(ScalametaTokenizer.scala:332)
+	at scala.meta.tokenizers.Api$XtensionTokenizeDialectInput.tokenize(Api.scala:25)
+	at scala.meta.tokenizers.Api$XtensionTokenizeInputLike.tokenize(Api.scala:14)
+	at scala.meta.internal.parsers.ScannerTokens$.apply(ScannerTokens.scala:655)
+	at scala.meta.internal.parsers.ScalametaParser.<init>(ScalametaParser.scala:33)
+	at scala.meta.parsers.Parse$$anon$1.apply(Parse.scala:35)
+	at scala.meta.parsers.Api$XtensionParseDialectInput.parse(Api.scala:25)
+	at scala.meta.internal.parsing.Trees.$anonfun$parse$2(Trees.scala:137)
+	at scala.meta.internal.parsing.Trees$$Lambda$1296/0x00000001006f7040.apply(Unknown Source)
+	at scala.Option.map(Option.scala:242)
+	at scala.meta.internal.parsing.Trees.parse(Trees.scala:130)
+	at scala.meta.internal.parsing.Trees.$anonfun$get$1(Trees.scala:39)
+	at scala.meta.internal.parsing.Trees$$Lambda$1282/0x00000001006d0c40.apply(Unknown Source)
+	at scala.Option.orElse(Option.scala:477)
+	at scala.meta.internal.parsing.Trees.get(Trees.scala:39)
+	at scala.meta.internal.parsing.Trees.findLastEnclosingAt(Trees.scala:85)
+	at scala.meta.internal.metals.codeactions.InsertInferredType.$anonfun$contribute$1(InsertInferredType.scala:110)
+	at scala.meta.internal.metals.codeactions.InsertInferredType$$Lambda$1283/0x00000001006f0040.apply(Unknown Source)
+	at scala.concurrent.Future$.$anonfun$apply$1(Future.scala:678)
+	at scala.concurrent.Future$$$Lambda$962/0x00000001004ea840.apply(Unknown Source)
+Exception in thread "pool-1-thread-10" Exception in thread "pool-2-thread-1" java.lang.OutOfMemoryError: Java heap space
+Exception in thread "pool-1-thread-7" java.lang.OutOfMemoryError: Java heap space
+java.lang.OutOfMemoryError: Java heap space
+Exception in thread "pool-1-thread-11" Exception in thread "pool-1-thread-8" java.lang.OutOfMemoryError: Java heap space
+java.lang.OutOfMemoryError: Java heap space
+abr 29, 2023 3:32:50 DA TARDE org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 4
+abr 29, 2023 3:32:50 DA TARDE org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 3
+mai 01, 2023 5:05:51 DA TARDE org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 15
+mai 01, 2023 5:05:51 DA TARDE org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 16
