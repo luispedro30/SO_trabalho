@@ -1,6 +1,7 @@
 import os, json, re
 import solverInstance
 import xlsxwriter 
+import cython
 
 def readInstances(filename: str):
     """
@@ -14,6 +15,7 @@ def readInstances(filename: str):
         facilitiesOpeningCost = {}
         facilitiesCapacity = {}
         customersDemand = {}
+
         for index, row in enumerate(lib_file):
             try:
                 if index == 0:
@@ -40,7 +42,7 @@ def main(directory) -> None:
     """
 
     numCustomers, numFacilities, customersDemand,facilitiesCapacity,facilitiesOpeningCost,transportationCosts = readInstances(os.path.join("..", "instances", "formatted",
-                                                                                  "Lib_1", "p21"))
+                                                                                  "Lib_1", "p1"))
     x1, time1 = solverInstance.main('p1',customersDemand,
                         facilitiesCapacity,
                         facilitiesOpeningCost,

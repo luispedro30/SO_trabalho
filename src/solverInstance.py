@@ -1,9 +1,11 @@
 from ortools.linear_solver import pywraplp
+from ortools.constraint_solver import pywrapcp
 import cython
 
 def main(nameModel,d,s,f,c,numClients,numFacilities):
 
     solver = pywraplp.Solver('SCIP',pywraplp.Solver.SCIP_MIXED_INTEGER_PROGRAMMING)
+    #solver = pywrapcp.Solver('SCIP')
     if not solver:
         return
 
@@ -13,6 +15,7 @@ def main(nameModel,d,s,f,c,numClients,numFacilities):
     x = {}
     for facility in range(numFacilities):
         for client in range(numClients):
+            #x[client, facility] = solver.IntVar(0, 1,f'x[{client},{facility}]')
             x[client, facility] = solver.IntVar(0, 1,f'x[{client},{facility}]')
 
     # y[facility] is an array of 0-1 variables, which will be 1
@@ -32,8 +35,6 @@ def main(nameModel,d,s,f,c,numClients,numFacilities):
             solver.Sum([x[client, facility] * d[client] for client in range(numClients)]) <= 
             s[facility]*y[facility])
     
-    
-     
     # Objective
     objectiveTerms = []            
     objectiveTerms.append(sum(f[facility] * y[facility] for facility in range(numFacilities)))

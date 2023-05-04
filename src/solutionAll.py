@@ -50,6 +50,7 @@ def main(directory) -> None:
         nameSheet = path.split('/')[1]
         for name in files:
             nameModel = nameSheet+name
+            print(nameModel)
             numCustomers, numFacilities, customersDemand,facilitiesCapacity,facilitiesOpeningCost,transportationCosts = readInstances(os.path.join(path, name))
             solution, time = solverInstance.main(nameModel,customersDemand,
                     facilitiesCapacity,
@@ -69,7 +70,7 @@ def main(directory) -> None:
             if name == 'os':
                 with open(os.path.join(path, name), "r") as lib_file:
                     for index, row in enumerate(lib_file):
-                        expectedResults.append(int(row.split()[0]))
+                        expectedResults.append(float(row.split()[0]))
 
     
     workbook = xlsxwriter.Workbook('../outputs/'+str(path.split("/",1)[1])+'.xlsx') 
@@ -96,6 +97,8 @@ def main(directory) -> None:
     
 if __name__ == "__main__":
     for path, subdirs, files in os.walk(os.path.join("..", "instances", "formatted")):
-        if path.split('..\\instances\\')[1].replace('\\','/') != 'formatted':
+        if path.split('..\\instances\\')[1].replace('\\','/') == 'formatted/Lib_3':
             main(os.path.join("..", "instances", path.split('..\\instances\\')[1].replace('\\','/')))
+            #print((os.path.join("..", "instances", path.split('..\\instances\\')[1].replace('\\','/'))))
+            
 
