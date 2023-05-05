@@ -23,7 +23,7 @@ def main(nameModel,d,s,f,c,numClients,numFacilities):
     y = {}
     for facility in range(numFacilities):
         y[facility] = solver.IntVar(0, 1, f'y[{facility}]')
-        
+
     # Constraints
     # The total size of the facilities each client takes on is 1
     for client in range(numClients):
