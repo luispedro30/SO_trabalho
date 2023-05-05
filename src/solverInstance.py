@@ -43,8 +43,7 @@ def main(nameModel,d,s,f,c,numClients,numFacilities):
     solver.Minimize(solver.Sum(objectiveTerms))
 
     #Set the limit to 20 minutes
-    solver.set_time_limit(1200000)  
-
+    solver.set_time_limit(1200000)      
     status = solver.Solve()
     
     # Print solution.

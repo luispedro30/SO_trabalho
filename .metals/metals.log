@@ -107,3 +107,99 @@ mai 01, 2023 5:05:51 DA TARDE org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCan
 WARNING: Unmatched cancel notification for request id 15
 mai 01, 2023 5:05:51 DA TARDE org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
 WARNING: Unmatched cancel notification for request id 16
+2023.05.04 13:52:58 INFO  Started: Metals version 0.11.12 in workspace 'D:\Universidade\2º Semestre\Simulação\SO_trabalho' for client Visual Studio Code 1.77.3.
+mai 04, 2023 1:52:58 DA TARDE org.flywaydb.core.internal.license.VersionPrinter printVersionOnly
+INFO: Flyway Community Edition 9.16.3 by Redgate
+mai 04, 2023 1:52:58 DA TARDE org.flywaydb.core.internal.license.VersionPrinter printVersion
+INFO: See release notes here: https://rd.gt/416ObMi
+mai 04, 2023 1:52:58 DA TARDE org.flywaydb.core.internal.license.VersionPrinter printVersion
+INFO: 
+mai 04, 2023 1:53:03 DA TARDE org.flywaydb.core.internal.database.base.BaseDatabaseType createDatabase
+INFO: Database: jdbc:h2:file:D:\Universidade\2º Semestre\Simulação\SO_trabalho\.metals\metals (H2 2.1)
+mai 04, 2023 1:53:03 DA TARDE org.flywaydb.core.internal.command.DbValidate validate
+INFO: Successfully validated 4 migrations (execution time 00:00.056s)
+mai 04, 2023 1:53:03 DA TARDE org.flywaydb.core.internal.command.DbMigrate migrateGroup
+INFO: Current version of schema "PUBLIC": 4
+mai 04, 2023 1:53:03 DA TARDE org.flywaydb.core.internal.command.DbMigrate logSummary
+INFO: Schema "PUBLIC" is up to date. No migration necessary.
+2023.05.04 13:53:03 INFO  time: initialize in 5.18s
+2023.05.04 13:53:05 WARN  Build server is not auto-connectable.
+2023.05.04 13:53:05 WARN  no build tool detected in workspace 'D:\Universidade\2º Semestre\Simulação\SO_trabalho'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. 
+Exception in thread "pool-1-thread-11" java.lang.OutOfMemoryError: Java heap space
+	at scala.meta.tokens.Token$Constant$Double$.apply(Token.scala:129)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.pushLegacyToken$1(ScalametaTokenizer.scala:50)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.emitToken$1(ScalametaTokenizer.scala:201)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.loop$1(ScalametaTokenizer.scala:206)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.uncachedTokenize(ScalametaTokenizer.scala:314)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.$anonfun$tokenize$1(ScalametaTokenizer.scala:17)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer$$Lambda$1277/0x00000001006d5840.apply(Unknown Source)
+	at scala.collection.concurrent.TrieMap.getOrElseUpdate(TrieMap.scala:962)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer.tokenize(ScalametaTokenizer.scala:17)
+	at scala.meta.internal.tokenizers.ScalametaTokenizer$$anon$2.apply(ScalametaTokenizer.scala:332)
+	at scala.meta.tokenizers.Api$XtensionTokenizeDialectInput.tokenize(Api.scala:25)
+	at scala.meta.tokenizers.Api$XtensionTokenizeInputLike.tokenize(Api.scala:14)
+	at scala.meta.internal.parsers.ScannerTokens$.apply(ScannerTokens.scala:655)
+	at scala.meta.internal.parsers.ScalametaParser.<init>(ScalametaParser.scala:33)
+	at scala.meta.parsers.Parse$$anon$1.apply(Parse.scala:35)
+	at scala.meta.parsers.Api$XtensionParseDialectInput.parse(Api.scala:25)
+	at scala.meta.internal.parsing.Trees.$anonfun$parse$2(Trees.scala:137)
+	at scala.meta.internal.parsing.Trees$$Lambda$1304/0x0000000100703040.apply(Unknown Source)
+	at scala.Option.map(Option.scala:242)
+	at scala.meta.internal.parsing.Trees.parse(Trees.scala:130)
+	at scala.meta.internal.parsing.Trees.$anonfun$get$1(Trees.scala:39)
+	at scala.meta.internal.parsing.Trees$$Lambda$1288/0x00000001006f2440.apply(Unknown Source)
+	at scala.Option.orElse(Option.scala:477)
+	at scala.meta.internal.parsing.Trees.get(Trees.scala:39)
+	at scala.meta.internal.metals.codeactions.ExtractRenameMember.$anonfun$contribute$1(ExtractRenameMember.scala:52)
+	at scala.meta.internal.metals.codeactions.ExtractRenameMember$$Lambda$1287/0x00000001006f2040.apply(Unknown Source)
+	at scala.concurrent.Future$.$anonfun$apply$1(Future.scala:678)
+	at scala.concurrent.Future$$$Lambda$961/0x00000001004ea040.apply(Unknown Source)
+	at scala.concurrent.impl.Promise$Transformation.run(Promise.scala:467)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+	at java.base/java.lang.Thread.run(Thread.java:829)
+mai 04, 2023 1:57:04 DA TARDE org.eclipse.lsp4j.jsonrpc.RemoteEndpoint fallbackResponseError
+SEVERE: Internal error: java.lang.reflect.InvocationTargetException
+java.lang.RuntimeException: java.lang.reflect.InvocationTargetException
+	at org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint.lambda$null$0(GenericEndpoint.java:67)
+	at org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint.request(GenericEndpoint.java:120)
+	at org.eclipse.lsp4j.jsonrpc.RemoteEndpoint.handleRequest(RemoteEndpoint.java:261)
+	at org.eclipse.lsp4j.jsonrpc.RemoteEndpoint.consume(RemoteEndpoint.java:190)
+	at org.eclipse.lsp4j.jsonrpc.json.StreamMessageProducer.handleMessage(StreamMessageProducer.java:194)
+	at org.eclipse.lsp4j.jsonrpc.json.StreamMessageProducer.listen(StreamMessageProducer.java:94)
+	at org.eclipse.lsp4j.jsonrpc.json.ConcurrentMessageProcessor.run(ConcurrentMessageProcessor.java:113)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:515)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+	at java.base/java.lang.Thread.run(Thread.java:829)
+Caused by: java.lang.reflect.InvocationTargetException
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint.lambda$null$0(GenericEndpoint.java:65)
+	... 11 more
+Caused by: java.lang.OutOfMemoryError: Java heap space
+
+mai 04, 2023 1:57:04 DA TARDE org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 4
+mai 04, 2023 1:57:04 DA TARDE org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 1
+mai 04, 2023 1:57:04 DA TARDE org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 3
+Exception in thread "pool-1-thread-10" java.lang.OutOfMemoryError: Java heap space
+Exception in thread "pool-1-thread-12" Exception in thread "pool-1-thread-13" java.lang.OutOfMemoryError: Java heap space
+java.lang.OutOfMemoryError: Java heap space
+mai 04, 2023 2:10:58 DA TARDE org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 8
+mai 04, 2023 6:34:01 DA TARDE org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 11
+mai 04, 2023 7:17:50 DA TARDE org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+INFO: Unsupported notification method: $/setTrace
+mai 04, 2023 7:21:07 DA TARDE org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 16
+mai 04, 2023 7:21:07 DA TARDE org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 17
+mai 04, 2023 7:21:07 DA TARDE org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 15

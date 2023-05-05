@@ -42,7 +42,7 @@ def main(directory) -> None:
     """
 
     numCustomers, numFacilities, customersDemand,facilitiesCapacity,facilitiesOpeningCost,transportationCosts = readInstances(os.path.join("..", "instances", "formatted",
-                                                                                  "Lib_1", "p1"))
+                                                                                  "Lib_3", "p25"))
     x1, time1 = solverInstance.main('p1',customersDemand,
                         facilitiesCapacity,
                         facilitiesOpeningCost,
@@ -53,6 +53,6 @@ def main(directory) -> None:
     
 if __name__ == "__main__":
     for path, subdirs, files in os.walk(os.path.join("..", "instances", "formatted")):
-        if path.split('..\\instances\\')[1].replace('\\','/') == 'formatted/Lib_1' or path.split('..\\instances\\')[1].replace('\\','/') == 'formatted/Lib_2':
+        if path.split('..\\instances\\')[1].replace('\\','/') == 'formatted/Lib_3':
             main(os.path.join("..", "instances", path.split('..\\instances\\')[1].replace('\\','/')))
 
