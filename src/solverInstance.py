@@ -35,6 +35,8 @@ def main(nameModel,d,s,f,c,numClients,numFacilities):
             solver.Sum([x[client, facility] * d[client] for client in range(numClients)]) <= 
             s[facility]*y[facility])
     
+    for i in range(len(y)):
+        print(y[i])
     # Objective
     objectiveTerms = []            
     objectiveTerms.append(sum(f[facility] * y[facility] for facility in range(numFacilities)))
