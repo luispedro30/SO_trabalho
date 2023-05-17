@@ -203,3 +203,8 @@ mai 04, 2023 7:21:07 DA TARDE org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCan
 WARNING: Unmatched cancel notification for request id 17
 mai 04, 2023 7:21:07 DA TARDE org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
 WARNING: Unmatched cancel notification for request id 15
+mai 05, 2023 10:50:45 DA TARDE org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 26
+2023.05.08 18:44:02 INFO  Shutting down server
+2023.05.08 18:44:02 INFO  shutting down Metals
+2023.05.08 18:44:03 INFO  Exiting server

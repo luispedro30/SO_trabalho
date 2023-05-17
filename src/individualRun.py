@@ -14,6 +14,8 @@ def readInstances(filename: str):
         transportation_costs = list()
         facilitiesOpeningCost = {}
         facilitiesCapacity = {}
+        facilitiesCurrentCapacity = {}
+        facilitiesIsOpen = {}
         customersDemand = {}
 
         for index, row in enumerate(lib_file):
@@ -24,6 +26,8 @@ def readInstances(filename: str):
                 elif index == 1:
                     for capacity_index, capacity in enumerate(row.split()):
                         facilitiesCapacity[capacity_index] = int(capacity)
+                        facilitiesCurrentCapacity[capacity_index] = int(capacity)
+                        facilitiesIsOpen[capacity_index] = 0
                 elif index == 2:
                     for cost_index, opening_cost in enumerate(row.split()):
                         facilitiesOpeningCost[cost_index] = float(opening_cost)
@@ -34,21 +38,31 @@ def readInstances(filename: str):
                     transportation_costs.append(list(map(float, row.split())))
             except NameError as name_error:
                 print(f"!ERROR! Variable not declared: {name_error}")
-    return numCustomers, numFacilities, customersDemand,facilitiesCapacity,facilitiesOpeningCost,transportation_costs
+    return numCustomers, numFacilities, customersDemand,facilitiesCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost,transportation_costs
 
 def main(directory) -> None:
     """
     Run inside 'src' folder
     """
 
-    numCustomers, numFacilities, customersDemand,facilitiesCapacity,facilitiesOpeningCost,transportationCosts = readInstances(os.path.join("..", "instances", "formatted",
+    numCustomers, numFacilities, customersDemand,facilitiesCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost,transportationCosts = readInstances(os.path.join("..", "instances", "formatted",
                                                                                   "Lib_1", "p1"))
+    
+    print(numCustomers)
+    print(numFacilities)
+    print(facilitiesCapacity)
+    print(facilitiesOpeningCost)
+    print(facilitiesIsOpen)
+    print(customersDemand)
+    print(transportationCosts)
+    """
     x1, time1 = solverInstance.main('p1',customersDemand,
                         facilitiesCapacity,
                         facilitiesOpeningCost,
                         transportationCosts,
                         numCustomers,
                         numFacilities)
+                        """
 
     
 if __name__ == "__main__":
