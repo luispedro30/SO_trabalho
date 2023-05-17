@@ -102,6 +102,58 @@ def localSearchSolveShift(numCustomers, numFacilities, customersDemand, customer
 
     return sumTotal
 
+def localSearchSolveSwaft(numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts):
+        pairs_verified = []
+        for customer_a in range(numCustomers):
+            for customer_b in range(numCustomers):
+                if customer_a == customer_b or (customer_a, customer_b) in pairs_verified or \
+                        (customer_b, customer_a) in pairs_verified:
+                    continue
+                chosen_facility_a = customersFacilityAllocated[customer_a]
+                chosen_facility_b = customersFacilityAllocated[customer_b]
+
+                if customersDemand[customer_b] <= customersDemand[customer_a] + facilitiesCurrentCapacity[chosen_facility_a]:
+                    continue
+                
+                pairs_verified.append((customer_a, customer_b))
+                facilitiesCustomers[chosen_facility_a].remove(customer_a)
+                facilitiesCurrentCapacity[chosen_facility_a] += customersDemand[customer_a]
+                customersIsSatisfied[customer_a] == False
+                
+                facilitiesCustomers[chosen_facility_b].remove(customer_b)
+                facilitiesCurrentCapacity[chosen_facility_b] += customersDemand[customer_b]
+                customersIsSatisfied[customer_b] == False
+
+                facilitiesCustomers[chosen_facility_a].append(customer_b)
+                customersIsSatisfied[customer_b] = True
+                customersFacilityAllocated[customer_b] = chosen_facility_a
+                facilitiesCurrentCapacity[chosen_facility_a] -= customersDemand[customer_b]
+
+                facilitiesCustomers[chosen_facility_b].append(customer_a)
+                customersIsSatisfied[customer_a] = True
+                customersFacilityAllocated[customer_a] = chosen_facility_b
+                facilitiesCurrentCapacity[chosen_facility_b] -= customersDemand[customer_a]
+
+        facilitesTotalCost = {}
+        for facility in facilitiesCustomers:
+            somaFacility = 0
+            if facilitiesCustomers[facility]:
+                for customer in facilitiesCustomers[facility]:
+                    somaFacility += transportationCosts[customer][facility]
+                somaFacility += facilitiesOpeningCost[facility]
+            facilitesTotalCost[facility]= somaFacility
+
+        sumTotal = 0
+        for facility in facilitesTotalCost:
+            sumTotal += facilitesTotalCost[facility]
+
+        print(facilitiesCurrentCapacity)
+        print(facilitiesCustomers)
+        print(customersIsSatisfied)
+        print(customersFacilityAllocated)
+
+        return sumTotal
+
 def readInstances(filename: str):
     """
     readInstances reads all the instances in a directory
@@ -153,12 +205,14 @@ def main(directory) -> None:
     """
 
     numCustomers, numFacilities, customersDemand,customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts = readInstances(os.path.join("..", "instances", "formatted",
-                                                                                  "Lib_1", "p1"))
+                                                                                  "Lib_2", "p1"))
     
     solution = solve(numCustomers, numFacilities, customersDemand,customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts)
     print(solution)
     solution2 = localSearchSolveShift(numCustomers, numFacilities, customersDemand,customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts)
     print(solution2)
+    solution3 = localSearchSolveSwaft(numCustomers, numFacilities, customersDemand,customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts)
+    print(solution3)
 
     #a = generateRandomSolution(numFacilities,numCustomers,transportationCosts)
     
