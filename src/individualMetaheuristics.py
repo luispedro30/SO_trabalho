@@ -64,7 +64,59 @@ def solve(numCustomers, numFacilities, customersDemand, customersIsSatisfied, cu
     print(customersIsSatisfied)
     print(customersFacilityAllocated)
 
-    return sumTotal
+    return sumTotal, numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts
+
+def randomSolution(numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts):
+    facilities_factor = []
+    list_customers = []
+    served_customers = []
+    for x in range(numFacilities):
+        facilities_factor.append(x)
+    
+    for x in range(numCustomers):
+        list_customers.append(x)
+
+    random_customers = random.sample(list_customers, k=len(list_customers))
+    print(random_customers)
+
+    for x in facilitiesOpeningCost:
+        if len(served_customers) < numCustomers:
+            optimal_facility_index = x
+            facilitiesIsOpen[optimal_facility_index] = True
+            for y in random_customers:
+                if facilitiesCurrentCapacity == 0:
+                    break
+                elif (customersDemand[y] <= facilitiesCurrentCapacity[x] and y not in served_customers):
+                    facilitiesCustomers[x].append(y)
+                    customersIsSatisfied[y] = True
+                    customersFacilityAllocated[y] = x
+                    facilitiesCurrentCapacity[x] -= customersDemand[y]
+                    served_customers.append(y)
+        else:
+            break
+    
+
+    facilitesTotalCost = {}
+    for facility in facilitiesCustomers:
+        somaFacility = 0
+        #print(facilitiesCustomers[facility])
+        if facilitiesCustomers[facility]:
+            for customer in facilitiesCustomers[facility]:
+                somaFacility += transportationCosts[customer][facility]
+            somaFacility += facilitiesOpeningCost[facility]
+        facilitesTotalCost[facility]= somaFacility
+
+    sumTotal = 0
+    for facility in facilitesTotalCost:
+        sumTotal += facilitesTotalCost[facility]
+    
+    print(facilitiesCurrentCapacity)
+    print(facilitiesCustomers)
+    print(facilitiesIsOpen)
+    print(customersIsSatisfied)
+    print(customersFacilityAllocated)
+
+    return sumTotal, numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts
 
 def localSearchSolveShift(numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts):
     for customer in range(numCustomers):
@@ -100,7 +152,7 @@ def localSearchSolveShift(numCustomers, numFacilities, customersDemand, customer
     print(customersIsSatisfied)
     print(customersFacilityAllocated)
 
-    return sumTotal
+    return sumTotal, numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts
 
 def localSearchSolveSwaft(numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts):
         pairs_verified = []
@@ -152,7 +204,7 @@ def localSearchSolveSwaft(numCustomers, numFacilities, customersDemand, customer
         print(customersIsSatisfied)
         print(customersFacilityAllocated)
 
-        return sumTotal
+        return sumTotal, numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts
 
 def readInstances(filename: str):
     """
@@ -199,23 +251,31 @@ def readInstances(filename: str):
                 print(f"!ERROR! Variable not declared: {name_error}")
     return numCustomers, numFacilities, customersDemand,customersIsSatisfied, customersFacilityAllocated, customersTransportationCost, facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportation_costs
 
+
 def main(directory) -> None:
     """
     Run inside 'src' folder
-    """
-
-    numCustomers, numFacilities, customersDemand,customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts = readInstances(os.path.join("..", "instances", "formatted",
+    """    
+    best_solution = None
+    best_cost = float('inf')
+    solutions = []
+    for _ in range(100):
+        # Construct a random solution
+        numCustomers, numFacilities, customersDemand,customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts = readInstances(os.path.join("..", "instances", "formatted",
                                                                                   "Lib_1", "p1"))
+        solution, numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts = randomSolution(numCustomers, numFacilities, customersDemand,customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts)
+        solutions.append(solution)
+        # Perform local search on the solution
+        solution2, numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts = localSearchSolveShift(numCustomers, numFacilities, customersDemand,customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts)
+        #print(solution2)
+        # Update the best solution if the current solution is better
+        if solution2 < best_cost:
+            best_cost = solution2
     
-    solution = solve(numCustomers, numFacilities, customersDemand,customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts)
-    print(solution)
-    solution2 = localSearchSolveShift(numCustomers, numFacilities, customersDemand,customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts)
-    print(solution2)
-    solution3 = localSearchSolveSwaft(numCustomers, numFacilities, customersDemand,customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts)
-    print(solution3)
+    print(solutions)
+    print(best_cost)
 
-    #a = generateRandomSolution(numFacilities,numCustomers,transportationCosts)
-    
+    return best_cost
 
 
     
