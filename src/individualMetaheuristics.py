@@ -119,6 +119,11 @@ def greedy(alfa, numCustomers, numFacilities, customersDemand, customersIsSatisf
 
     return sumTotal, numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts
 
+def transpose_list_of_lists(lst):
+    transposed = [list(row) for row in zip(*lst)]
+    return transposed
+
+
 def grasp(alfa, numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts):
     facilities_factor = facilitiesOpeningCost.copy()
     list_customers = []
@@ -128,25 +133,11 @@ def grasp(alfa, numCustomers, numFacilities, customersDemand, customersIsSatisfi
         list_customers.append(x)
 
     random_customers = random.sample(list_customers, k=len(list_customers))
-    """
-    min_cost = min(facilitiesOpeningCost.values())
-    max_cost = max(facilitiesOpeningCost.values())
-    diff_cost = max_cost - min_cost
+    sorted_dict_customer = dict(sorted(customersDemand.items(), key=lambda x: x[1]))
 
-    sorted_dict = dict(sorted(facilitiesOpeningCost.items(), key=lambda x: x[1]))
-    possible_facilities = {key: value for key, value in sorted_dict.items() if value <= min_cost + alfa * diff_cost}
-    #random_facilities = random.sample(list(possible_facilities.keys()), len(possible_facilities))
-    """
+    transposed_list = transpose_list_of_lists(transportationCosts)
+    print(transposed_list)
 
-    #items = list(possible_facilities.items())
-
-    # Shuffle the list
-    #random.shuffle(items)
-
-    # Create a new dictionary from the shuffled list
-    #shuffled_dict = dict(items)
-
-    #for x, value in shuffled_dict.items():
     for x in range(numFacilities):
         min_cost = min(facilities_factor.values())
         max_cost = max(facilities_factor.values())
@@ -160,11 +151,11 @@ def grasp(alfa, numCustomers, numFacilities, customersDemand, customersIsSatisfi
         if len(served_customers) < numCustomers:
             optimal_facility_index = x
             facilitiesIsOpen[optimal_facility_index] = True
-            for y in random_customers:
+            sorted_indices = sorted(enumerate(transposed_list[x]), key=lambda x: x[1])
+            for y, value in sorted_indices:
                 if facilitiesCurrentCapacity == 0:
                     break
                 elif (customersDemand[y] <= facilitiesCurrentCapacity[x] and y not in served_customers):
-                    print(y,x)
                     facilitiesCustomers[x].append(y)
                     customersIsSatisfied[y] = True
                     customersFacilityAllocated[y] = x
@@ -200,10 +191,10 @@ def localSearchSolveShift(numCustomers, numFacilities, customersDemand, customer
         for facility in range(numFacilities):
             if  (facilitiesIsOpen[facility] == False or not facilitiesCustomers[facility] or customersDemand[customer] > facilitiesCurrentCapacity[facility]):
                 continue
-        
+            
             chosen_facility = customersFacilityAllocated[customer]
             if chosen_facility != None:
-                if facilitiesOpeningCost[facility] <= facilitiesOpeningCost[chosen_facility]:
+                if transportationCosts[customer][facility] < transportationCosts[customer][chosen_facility]:
                     facilitiesCustomers[chosen_facility].remove(customer)
                     facilitiesCurrentCapacity[chosen_facility] += customersDemand[customer]
                     customersIsSatisfied[customer] == False
@@ -212,12 +203,6 @@ def localSearchSolveShift(numCustomers, numFacilities, customersDemand, customer
                     customersIsSatisfied[customer] = True
                     customersFacilityAllocated[customer] = facility
                     facilitiesCurrentCapacity[facility] -= customersDemand[customer]
-            else:
-                facilitiesCustomers[facility].append(customer)
-                customersIsSatisfied[customer] = True
-                customersFacilityAllocated[customer] = facility
-                facilitiesCurrentCapacity[facility] -= customersDemand[customer]
-
 
     facilitesTotalCost = {}
     for facility in facilitiesCustomers:
@@ -237,59 +222,62 @@ def localSearchSolveShift(numCustomers, numFacilities, customersDemand, customer
     print(customersIsSatisfied)
     print(customersFacilityAllocated)
 
-    return sumTotal, numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts
+    return sumTotal
 
 def localSearchSolveSwaft(numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts):
-        pairs_verified = []
-        for customer_a in range(numCustomers):
-            for customer_b in range(numCustomers):
-                if customer_a == customer_b or (customer_a, customer_b) in pairs_verified or \
-                        (customer_b, customer_a) in pairs_verified:
-                    continue
-                chosen_facility_a = customersFacilityAllocated[customer_a]
-                chosen_facility_b = customersFacilityAllocated[customer_b]
+    pairs_verified = []
+    for customer_a in range(numCustomers):
+        for customer_b in range(numCustomers):
+            if customer_a == customer_b or (customer_a, customer_b) in pairs_verified or \
+                    (customer_b, customer_a) in pairs_verified:
+                continue
+            chosen_facility_a = customersFacilityAllocated[customer_a]
+            chosen_facility_b = customersFacilityAllocated[customer_b]
 
-                if customersDemand[customer_b] <= customersDemand[customer_a] + facilitiesCurrentCapacity[chosen_facility_a]:
-                    continue
-                
-                pairs_verified.append((customer_a, customer_b))
-                facilitiesCustomers[chosen_facility_a].remove(customer_a)
-                facilitiesCurrentCapacity[chosen_facility_a] += customersDemand[customer_a]
-                customersIsSatisfied[customer_a] == False
-                
-                facilitiesCustomers[chosen_facility_b].remove(customer_b)
-                facilitiesCurrentCapacity[chosen_facility_b] += customersDemand[customer_b]
-                customersIsSatisfied[customer_b] == False
+            if customersDemand[customer_b] <= customersDemand[customer_a] + facilitiesCurrentCapacity[chosen_facility_a]:
+                continue
 
-                facilitiesCustomers[chosen_facility_a].append(customer_b)
-                customersIsSatisfied[customer_b] = True
-                customersFacilityAllocated[customer_b] = chosen_facility_a
-                facilitiesCurrentCapacity[chosen_facility_a] -= customersDemand[customer_b]
+            if transportationCosts[customer_a][chosen_facility_a] <= transportationCosts[customer_a][chosen_facility_b] or transportationCosts[customer_b][chosen_facility_b] <= transportationCosts[customer_b][chosen_facility_a]:
+                continue
+            
+            pairs_verified.append((customer_a, customer_b))
+            facilitiesCustomers[chosen_facility_a].remove(customer_a)
+            facilitiesCurrentCapacity[chosen_facility_a] += customersDemand[customer_a]
+            customersIsSatisfied[customer_a] == False
+            
+            facilitiesCustomers[chosen_facility_b].remove(customer_b)
+            facilitiesCurrentCapacity[chosen_facility_b] += customersDemand[customer_b]
+            customersIsSatisfied[customer_b] == False
 
-                facilitiesCustomers[chosen_facility_b].append(customer_a)
-                customersIsSatisfied[customer_a] = True
-                customersFacilityAllocated[customer_a] = chosen_facility_b
-                facilitiesCurrentCapacity[chosen_facility_b] -= customersDemand[customer_a]
+            facilitiesCustomers[chosen_facility_a].append(customer_b)
+            customersIsSatisfied[customer_b] = True
+            customersFacilityAllocated[customer_b] = chosen_facility_a
+            facilitiesCurrentCapacity[chosen_facility_a] -= customersDemand[customer_b]
 
-        facilitesTotalCost = {}
-        for facility in facilitiesCustomers:
-            somaFacility = 0
-            if facilitiesCustomers[facility]:
-                for customer in facilitiesCustomers[facility]:
-                    somaFacility += transportationCosts[customer][facility]
-                somaFacility += facilitiesOpeningCost[facility]
-            facilitesTotalCost[facility]= somaFacility
+            facilitiesCustomers[chosen_facility_b].append(customer_a)
+            customersIsSatisfied[customer_a] = True
+            customersFacilityAllocated[customer_a] = chosen_facility_b
+            facilitiesCurrentCapacity[chosen_facility_b] -= customersDemand[customer_a]
 
-        sumTotal = 0
-        for facility in facilitesTotalCost:
-            sumTotal += facilitesTotalCost[facility]
+    facilitesTotalCost = {}
+    for facility in facilitiesCustomers:
+        somaFacility = 0
+        if facilitiesCustomers[facility]:
+            for customer in facilitiesCustomers[facility]:
+                somaFacility += transportationCosts[customer][facility]
+            somaFacility += facilitiesOpeningCost[facility]
+        facilitesTotalCost[facility]= somaFacility
 
-        print(facilitiesCurrentCapacity)
-        print(facilitiesCustomers)
-        print(customersIsSatisfied)
-        print(customersFacilityAllocated)
+    sumTotal = 0
+    for facility in facilitesTotalCost:
+        sumTotal += facilitesTotalCost[facility]
 
-        return sumTotal, numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts
+    print(facilitiesCurrentCapacity)
+    print(facilitiesCustomers)
+    print(customersIsSatisfied)
+    print(customersFacilityAllocated)
+
+    return sumTotal
 
 def readInstances(filename: str):
     """
@@ -350,30 +338,29 @@ def main(directory) -> None:
     #fazer a diferença 
     #custo mínimo + diferença * alfa
     #escolher random entre custo mínimo e custo mínimo + diferença * alfa
-    alfa = 0.1
+    alfa = 0.05
     for iteration in range(100):
         # Construct a random solution
-        print(iteration)
         if iteration % 10 == 0:
             alfa += alfa
 
         numCustomers, numFacilities, customersDemand,customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts = readInstances(os.path.join("..", "instances", "formatted",
-                                                                                  "Lib_1", "p2"))
+                                                                                  "Lib_1", "p1"))
+        
         solution, numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts = grasp(alfa, numCustomers, numFacilities, customersDemand,customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts)
         solutions.append(solution)
-        print(solution)
-        print(alfa)
         
-        solution2, numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts = localSearchSolveShift(numCustomers, numFacilities, customersDemand,customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts)
-        
+        solution2 = localSearchSolveShift(numCustomers, numFacilities, customersDemand,customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts)
+        print(solution2)
+        solutions.append(solution2)
         if solution2 < best_cost:
             best_cost = solution2
+    
     
     print(solutions)
     print(best_cost)
 
     return best_cost
-
 
     
 if __name__ == "__main__":
