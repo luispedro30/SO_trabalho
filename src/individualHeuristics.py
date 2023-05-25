@@ -66,6 +66,60 @@ def solve(numCustomers, numFacilities, customersDemand, customersIsSatisfied, cu
 
     return sumTotal
 
+def greedy(numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts):
+    facilities_factor = []
+    list_customers = []
+    served_customers = []
+    for x in range(numFacilities):
+        facilities_factor.append(x)
+    
+    for x in range(numCustomers):
+        list_customers.append(x)
+
+    random_customers = random.sample(list_customers, k=len(list_customers))
+    print(random_customers)
+
+    sorted_dict = dict(sorted(facilitiesOpeningCost.items(), key=lambda x: x[1]))
+
+    for x, value in sorted_dict.items():
+        if len(served_customers) < numCustomers:
+            optimal_facility_index = x
+            facilitiesIsOpen[optimal_facility_index] = True
+            for y in random_customers:
+                if facilitiesCurrentCapacity == 0:
+                    break
+                elif (customersDemand[y] <= facilitiesCurrentCapacity[x] and y not in served_customers):
+                    facilitiesCustomers[x].append(y)
+                    customersIsSatisfied[y] = True
+                    customersFacilityAllocated[y] = x
+                    facilitiesCurrentCapacity[x] -= customersDemand[y]
+                    served_customers.append(y)
+        else:
+            break
+    
+
+    facilitesTotalCost = {}
+    for facility in facilitiesCustomers:
+        somaFacility = 0
+        #print(facilitiesCustomers[facility])
+        if facilitiesCustomers[facility]:
+            for customer in facilitiesCustomers[facility]:
+                somaFacility += transportationCosts[customer][facility]
+            somaFacility += facilitiesOpeningCost[facility]
+        facilitesTotalCost[facility]= somaFacility
+
+    sumTotal = 0
+    for facility in facilitesTotalCost:
+        sumTotal += facilitesTotalCost[facility]
+    
+    print(facilitiesCurrentCapacity)
+    print(facilitiesCustomers)
+    print(facilitiesIsOpen)
+    print(customersIsSatisfied)
+    print(customersFacilityAllocated)
+
+    return sumTotal
+
 def localSearchSolveShift(numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts):
     for customer in range(numCustomers):
         for facility in range(numFacilities):
@@ -205,9 +259,9 @@ def main(directory) -> None:
     """
 
     numCustomers, numFacilities, customersDemand,customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts = readInstances(os.path.join("..", "instances", "formatted",
-                                                                                  "Lib_1", "p1"))
+                                                                                  "Lib_1", "p5"))
     
-    solution = solve(numCustomers, numFacilities, customersDemand,customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts)
+    solution = greedy(numCustomers, numFacilities, customersDemand,customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts)
     print(solution)
     solution2 = localSearchSolveShift(numCustomers, numFacilities, customersDemand,customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts)
     print(solution2)
@@ -221,7 +275,7 @@ def main(directory) -> None:
     
 if __name__ == "__main__":
     for path, subdirs, files in os.walk(os.path.join("..", "instances", "formatted")):
-        if path.split('..\\instances\\')[1].replace('\\','/') == 'formatted/Lib_3':
+        if path.split('..\\instances\\')[1].replace('\\','/') == 'formatted/Lib_1':
             main(os.path.join("..", "instances", path.split('..\\instances\\')[1].replace('\\','/')))
 
 
