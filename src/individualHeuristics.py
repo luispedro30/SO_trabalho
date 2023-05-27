@@ -4,6 +4,8 @@ import xlsxwriter
 import cython
 import random 
 import numpy as np
+import time
+from time import perf_counter
 
 """
 Generates a random solution to to a given instance of a uncapacitated facility location problem 
@@ -168,6 +170,7 @@ def sol(numCustomers, numFacilities, customersDemand, customersIsSatisfied, cust
     return sumTotal
 
 def localSearchSolveShift(numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts):
+    start_time = time.time()  # Start the timer
     for customer in range(numCustomers):
         for facility in range(numFacilities):
             if  (facilitiesIsOpen[facility] == False or not facilitiesCustomers[facility] or customersDemand[customer] > facilitiesCurrentCapacity[facility]):
@@ -202,63 +205,68 @@ def localSearchSolveShift(numCustomers, numFacilities, customersDemand, customer
     print(facilitiesCustomers)
     print(customersIsSatisfied)
     print(customersFacilityAllocated)
+    elapsed_time = time.time() - start_time
+    #print("Elapsed Time:", elapsed_time, "seconds")
 
     return sumTotal
 
 def localSearchSolveSwaft(numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts):
-        pairs_verified = []
-        for customer_a in range(numCustomers):
-            for customer_b in range(numCustomers):
-                if customer_a == customer_b or (customer_a, customer_b) in pairs_verified or \
-                        (customer_b, customer_a) in pairs_verified:
-                    continue
-                chosen_facility_a = customersFacilityAllocated[customer_a]
-                chosen_facility_b = customersFacilityAllocated[customer_b]
+    start_time = time.time()  # Start the timer
+    pairs_verified = []
+    for customer_a in range(numCustomers):
+        for customer_b in range(numCustomers):
+            if customer_a == customer_b or (customer_a, customer_b) in pairs_verified or \
+                    (customer_b, customer_a) in pairs_verified:
+                continue
+            chosen_facility_a = customersFacilityAllocated[customer_a]
+            chosen_facility_b = customersFacilityAllocated[customer_b]
 
-                if customersDemand[customer_b] <= customersDemand[customer_a] + facilitiesCurrentCapacity[chosen_facility_a]:
-                    continue
+            if customersDemand[customer_b] <= customersDemand[customer_a] + facilitiesCurrentCapacity[chosen_facility_a]:
+                continue
 
-                if transportationCosts[customer_a][chosen_facility_a] <= transportationCosts[customer_a][chosen_facility_b] or transportationCosts[customer_b][chosen_facility_b] <= transportationCosts[customer_b][chosen_facility_a]:
-                    continue
-                
-                pairs_verified.append((customer_a, customer_b))
-                facilitiesCustomers[chosen_facility_a].remove(customer_a)
-                facilitiesCurrentCapacity[chosen_facility_a] += customersDemand[customer_a]
-                customersIsSatisfied[customer_a] == False
-                
-                facilitiesCustomers[chosen_facility_b].remove(customer_b)
-                facilitiesCurrentCapacity[chosen_facility_b] += customersDemand[customer_b]
-                customersIsSatisfied[customer_b] == False
+            if transportationCosts[customer_a][chosen_facility_a] <= transportationCosts[customer_a][chosen_facility_b] or transportationCosts[customer_b][chosen_facility_b] <= transportationCosts[customer_b][chosen_facility_a]:
+                continue
+            
+            pairs_verified.append((customer_a, customer_b))
+            facilitiesCustomers[chosen_facility_a].remove(customer_a)
+            facilitiesCurrentCapacity[chosen_facility_a] += customersDemand[customer_a]
+            customersIsSatisfied[customer_a] == False
+            
+            facilitiesCustomers[chosen_facility_b].remove(customer_b)
+            facilitiesCurrentCapacity[chosen_facility_b] += customersDemand[customer_b]
+            customersIsSatisfied[customer_b] == False
 
-                facilitiesCustomers[chosen_facility_a].append(customer_b)
-                customersIsSatisfied[customer_b] = True
-                customersFacilityAllocated[customer_b] = chosen_facility_a
-                facilitiesCurrentCapacity[chosen_facility_a] -= customersDemand[customer_b]
+            facilitiesCustomers[chosen_facility_a].append(customer_b)
+            customersIsSatisfied[customer_b] = True
+            customersFacilityAllocated[customer_b] = chosen_facility_a
+            facilitiesCurrentCapacity[chosen_facility_a] -= customersDemand[customer_b]
 
-                facilitiesCustomers[chosen_facility_b].append(customer_a)
-                customersIsSatisfied[customer_a] = True
-                customersFacilityAllocated[customer_a] = chosen_facility_b
-                facilitiesCurrentCapacity[chosen_facility_b] -= customersDemand[customer_a]
+            facilitiesCustomers[chosen_facility_b].append(customer_a)
+            customersIsSatisfied[customer_a] = True
+            customersFacilityAllocated[customer_a] = chosen_facility_b
+            facilitiesCurrentCapacity[chosen_facility_b] -= customersDemand[customer_a]
 
-        facilitesTotalCost = {}
-        for facility in facilitiesCustomers:
-            somaFacility = 0
-            if facilitiesCustomers[facility]:
-                for customer in facilitiesCustomers[facility]:
-                    somaFacility += transportationCosts[customer][facility]
-                somaFacility += facilitiesOpeningCost[facility]
-            facilitesTotalCost[facility]= somaFacility
+    facilitesTotalCost = {}
+    for facility in facilitiesCustomers:
+        somaFacility = 0
+        if facilitiesCustomers[facility]:
+            for customer in facilitiesCustomers[facility]:
+                somaFacility += transportationCosts[customer][facility]
+            somaFacility += facilitiesOpeningCost[facility]
+        facilitesTotalCost[facility]= somaFacility
 
-        sumTotal = 0
-        for facility in facilitesTotalCost:
-            sumTotal += facilitesTotalCost[facility]
+    sumTotal = 0
+    for facility in facilitesTotalCost:
+        sumTotal += facilitesTotalCost[facility]
 
-        print(facilitiesCurrentCapacity)
-        print(facilitiesCustomers)
-        print(customersIsSatisfied)
-        print(customersFacilityAllocated)
+    print(facilitiesCurrentCapacity)
+    print(facilitiesCustomers)
+    print(customersIsSatisfied)
+    print(customersFacilityAllocated)
+    elapsed_time = time.time() - start_time
+    #print("Elapsed Time:", elapsed_time, "seconds")
 
-        return sumTotal
+    return sumTotal
 
 def readInstances(filename: str):
     """
@@ -313,12 +321,24 @@ def main(directory) -> None:
     numCustomers, numFacilities, customersDemand,customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts = readInstances(os.path.join("..", "instances", "formatted",
                                                                                   "Lib_1", "p1"))
     
+    time_constructive_start = perf_counter()
     solution = solve(numCustomers, numFacilities, customersDemand,customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts)
     print(solution)
+    time_constructive_end = perf_counter()
+    time_constructive = (time_constructive_end - time_constructive_start)*1000
+    print(time_constructive)
+    time_local_shift_start = perf_counter()
     solution2 = localSearchSolveShift(numCustomers, numFacilities, customersDemand,customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts)
+    time_local_shift_end = perf_counter()
     print(solution2)
+    time_local_shift = (time_local_shift_end - time_local_shift_start)*1000
+    print(time_local_shift)
+    time_local_swaft_start = perf_counter()
     solution3 = localSearchSolveSwaft(numCustomers, numFacilities, customersDemand,customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts)
+    time_local_swaft_end = perf_counter()
     print(solution3)
+    time_local_swaft = (time_local_swaft_end - time_local_swaft_start)*1000
+    print(time_local_swaft)
     #a = generateRandomSolution(numFacilities,numCustomers,transportationCosts)
     
 

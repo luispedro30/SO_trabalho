@@ -137,7 +137,6 @@ def grasp(alfa, numCustomers, numFacilities, customersDemand, customersIsSatisfi
     sorted_dict_customer = dict(sorted(customersDemand.items(), key=lambda x: x[1]))
 
     transposed_list = transpose_list_of_lists(transportationCosts)
-    print(transposed_list)
 
     for x in range(numFacilities):
         min_cost = min(facilities_factor.values())
@@ -166,7 +165,6 @@ def grasp(alfa, numCustomers, numFacilities, customersDemand, customersIsSatisfi
             break    
 
     facilitesTotalCost = {}
-    print(facilitiesOpeningCost)
     for facility in facilitiesCustomers:
         somaFacility = 0
         if facilitiesCustomers[facility]:
@@ -179,11 +177,13 @@ def grasp(alfa, numCustomers, numFacilities, customersDemand, customersIsSatisfi
     for facility in facilitesTotalCost:
         sumTotal += facilitesTotalCost[facility]
     
+    """
     print(facilitiesCurrentCapacity)
     print(facilitiesCustomers)
     print(facilitiesIsOpen)
     print(customersIsSatisfied)
     print(customersFacilityAllocated)
+    """
 
     return sumTotal, numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts
 
@@ -217,11 +217,12 @@ def localSearchSolveShift(numCustomers, numFacilities, customersDemand, customer
     sumTotal = 0
     for facility in facilitesTotalCost:
         sumTotal += facilitesTotalCost[facility]
-
+    """
     print(facilitiesCurrentCapacity)
     print(facilitiesCustomers)
     print(customersIsSatisfied)
     print(customersFacilityAllocated)
+    """
 
     return sumTotal
 
@@ -272,11 +273,12 @@ def localSearchSolveSwaft(numCustomers, numFacilities, customersDemand, customer
     sumTotal = 0
     for facility in facilitesTotalCost:
         sumTotal += facilitesTotalCost[facility]
-
+    """
     print(facilitiesCurrentCapacity)
     print(facilitiesCustomers)
     print(customersIsSatisfied)
     print(customersFacilityAllocated)
+    """
 
     return sumTotal
 
@@ -329,60 +331,99 @@ def readInstances(filename: str):
 def main(directory) -> None:
     """
     Run inside 'src' folder
-    """    
-    best_solution = None
-    best_cost = float('inf')
-    solutions = []
-    times_constructive = []
-    times_local_search = []
-
-    #criar alfa, que começa em 10% e vai aumentando
-    #custo minímo e máximo
-    #fazer a diferença 
-    #custo mínimo + diferença * alfa
-    #escolher random entre custo mínimo e custo mínimo + diferença * alfa
-    alfa = 0.05
-    for iteration in range(200):
-        # Construct a random solution
-        if iteration % 10 == 0:
-            alfa += alfa
-
-        time_constructive_start = perf_counter()
-        numCustomers, numFacilities, customersDemand,customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts = readInstances(os.path.join("..", "instances", "formatted",
-                                                                                  "Lib_1", "p2"))
-        
-        time_constructive_end = perf_counter()
-        time_constructive = (time_constructive_end - time_constructive_start)*1000
-        solution, numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts = grasp(alfa, numCustomers, numFacilities, customersDemand,customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts)
-        solution_constructive = solution
-        times_constructive.append(time_constructive)
-        
-        time_local_shift_start = perf_counter()
-        solution2 = localSearchSolveShift(numCustomers, numFacilities, customersDemand,customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts)
-        time_local_shift_end = perf_counter()
-        time_local_shift = (time_local_shift_end - time_local_shift_start)*1000
-        times_local_search.append(time_local_shift)
-        solutions.append(solution2)    
+    """
     
-    best_cost = min(solutions)
-    min_index = solutions.index(best_cost)
-    time_constructive_best_cost = times_constructive[min_index]
-    time_local_search_best_cost = times_local_search[min_index]
+    for path, subdirs, files in os.walk(directory):
+        result = []
+        timeResultConstructive = []
+        timeResultLocal = []
+        customers  = []
+        facilities = []
+        newFiles = []
+        files.remove('os')
+        files = (sorted(files, key=lambda s: int(re.search(r'\d+', s).group())))
+        nameSheet = path.split('/')[1]
+        for name in files:
+            best_solution = None
+            best_cost = float('inf')
+            solutions = []
+            times_constructive = []
+            times_local_search = []
+            nameModel = nameSheet+name
+            alfa = 0.05
+            for iteration in range(200):
+                # Construct a random solution
+                if iteration % 10 == 0:
+                    alfa += alfa
+
+                time_constructive_start = perf_counter()
+                numCustomers, numFacilities, customersDemand,customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts = readInstances(os.path.join(path, name))
+                print(name)
+                print(numCustomers)
+                time_constructive_end = perf_counter()
+                time_constructive = (time_constructive_end - time_constructive_start)*1000
+                solution, numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts = grasp(alfa, numCustomers, numFacilities, customersDemand,customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts)
+                solution_constructive = solution
+                print(solution_constructive)
+                times_constructive.append(time_constructive)
+                
+                time_local_shift_start = perf_counter()
+                solution2 = localSearchSolveSwaft(numCustomers, numFacilities, customersDemand,customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts)
+                time_local_shift_end = perf_counter()
+                time_local_shift = (time_local_shift_end - time_local_shift_start)*1000
+                times_local_search.append(time_local_shift)
+                solutions.append(solution2)    
+            
+            best_cost = min(solutions)
+            min_index = solutions.index(best_cost)
+            time_constructive_best_cost = times_constructive[min_index]
+            time_local_search_best_cost = times_local_search[min_index]
+
+            newFiles.append(name)
+            result.append(best_cost)
+            print(name, best_cost)
+            timeResultConstructive.append(time_constructive_best_cost)
+            timeResultLocal.append(time_local_search_best_cost)
+            customers.append(numCustomers)
+            facilities.append(numFacilities)  
+
+    print()
+    for path, subdirs, files in os.walk(directory):
+        expectedResults = []
+        for name in files:
+            if name == 'os':
+                with open(os.path.join(path, name), "r") as lib_file:
+                    for index, row in enumerate(lib_file):
+                        expectedResults.append(float(row.split()[0]))
+
     
-    print(solution_constructive)
-    print(best_cost)
-    print(time_constructive_best_cost)
-    print(time_local_search_best_cost)
+    workbook = xlsxwriter.Workbook('../outputsMetaheuristicsShift/'+str(path.split("/",1)[1])+'.xlsx') 
+    worksheet = workbook.add_worksheet(nameSheet)
+    worksheet.write('A1', '#')
+    worksheet.write('B1', '|I|-|J|')
+    worksheet.write('C1', 'Z*')
+    worksheet.write('D1', 'Z')
+    worksheet.write('E1', 'Gap')
+    worksheet.write('F1', 'Time Constructive')
+    worksheet.write('G1', 'Time Local')
 
-
-    return best_cost
-
+    row = 1
+    column = 0
+    # iterating through content list
+    for i in range(len(expectedResults)):
+        worksheet.write(row, column, newFiles[i])
+        worksheet.write(row, column+1, "{}-{}".format(facilities[i],customers[i]))
+        worksheet.write(row, column+2, expectedResults[i])
+        worksheet.write(row, column+3, result[i])
+        worksheet.write(row, column+4, (abs(result[i]-expectedResults[i])/expectedResults[i])*100)
+        worksheet.write(row, column+5, timeResultConstructive[i])
+        worksheet.write(row, column+6, timeResultLocal[i])
+        row += 1
+    workbook.close()
     
 if __name__ == "__main__":
     for path, subdirs, files in os.walk(os.path.join("..", "instances", "formatted")):
-        if path.split('..\\instances\\')[1].replace('\\','/') == 'formatted/Lib_1':
-            #print(os.path.join("..", "instances", path.split('..\\instances\\')[1].replace('\\','/')))
+        if path.split('..\\instances\\')[1].replace('\\','/') == 'formatted/Lib_5':
             main(os.path.join("..", "instances", path.split('..\\instances\\')[1].replace('\\','/')))
-
-
+            
 

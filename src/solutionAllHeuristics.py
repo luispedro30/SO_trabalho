@@ -4,6 +4,7 @@ import xlsxwriter
 import cython
 import random 
 import numpy as np
+import time
 from time import perf_counter
 
 """
@@ -59,15 +60,20 @@ def solve(numCustomers, numFacilities, customersDemand, customersIsSatisfied, cu
     for facility in facilitesTotalCost:
         sumTotal += facilitesTotalCost[facility]
     
+    """
     print(facilitiesCurrentCapacity)
     print(facilitiesCustomers)
     print(facilitiesIsOpen)
     print(customersIsSatisfied)
     print(customersFacilityAllocated)
+    """
+    return sumTotal
 
-    return sumTotal, numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts
+def findMinimumTransportClient(transportationCosts, clientIndex):
+    minIndex = transportationCosts[clientIndex].index(min(transportationCosts[clientIndex]))
+    return minIndex
 
-def greedy(alfa, numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts):
+def greedy(numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts):
     facilities_factor = []
     list_customers = []
     served_customers = []
@@ -81,14 +87,15 @@ def greedy(alfa, numCustomers, numFacilities, customersDemand, customersIsSatisf
 
     sorted_dict = dict(sorted(facilitiesOpeningCost.items(), key=lambda x: x[1]))
 
+    sorted_dict_customer = dict(sorted(customersDemand.items(), key=lambda x: x[1]))
     for x, value in sorted_dict.items():
         if len(served_customers) < numCustomers:
             optimal_facility_index = x
             facilitiesIsOpen[optimal_facility_index] = True
-            for y in random_customers:
+            for y in range(numCustomers):   
                 if facilitiesCurrentCapacity == 0:
                     break
-                elif (customersDemand[y] <= facilitiesCurrentCapacity[x] and y not in served_customers):
+                if (customersDemand[y] <= facilitiesCurrentCapacity[x] and y not in served_customers):
                     facilitiesCustomers[x].append(y)
                     customersIsSatisfied[y] = True
                     customersFacilityAllocated[y] = x
@@ -98,6 +105,50 @@ def greedy(alfa, numCustomers, numFacilities, customersDemand, customersIsSatisf
             break
     
 
+    facilitesTotalCost = {}
+    for facility in facilitiesCustomers:
+        somaFacility = 0
+        if facilitiesCustomers[facility]:
+            for customer in facilitiesCustomers[facility]:
+                somaFacility += transportationCosts[customer][facility]
+            somaFacility += facilitiesOpeningCost[facility]
+        facilitesTotalCost[facility]= somaFacility
+
+    sumTotal = 0
+    for facility in facilitesTotalCost:
+        sumTotal += facilitesTotalCost[facility]
+    
+    """
+    print(facilitiesCurrentCapacity)
+    print(facilitiesCustomers)
+    print(facilitiesIsOpen)
+    print(customersIsSatisfied)
+    print(customersFacilityAllocated)
+    """
+    return sumTotal
+
+
+def sol(numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts):
+    served_customers = []
+
+    sorted_dict = dict(sorted(facilitiesOpeningCost.items(), key=lambda x: x[1]))
+
+    for j in range(numCustomers):
+        min_cost = float('inf')
+        selected_facility = -1
+
+        # Find the facility with the minimum transportation cost
+        for i in range(numFacilities):
+            if i not in served_customers and facilitiesCurrentCapacity[i] >= customersDemand[j]:
+                cost = transportationCosts[j][i]
+                if cost < min_cost:
+                    min_cost = cost
+                    facilitiesCustomers[i].append(j)
+                    customersIsSatisfied[j] = True
+                    customersFacilityAllocated[i] = j
+                    facilitiesCurrentCapacity[i] -= customersDemand[j]
+                    served_customers.append(j)
+    
     facilitesTotalCost = {}
     for facility in facilitiesCustomers:
         somaFacility = 0
@@ -112,82 +163,18 @@ def greedy(alfa, numCustomers, numFacilities, customersDemand, customersIsSatisf
     for facility in facilitesTotalCost:
         sumTotal += facilitesTotalCost[facility]
     
+    """
     print(facilitiesCurrentCapacity)
     print(facilitiesCustomers)
     print(facilitiesIsOpen)
     print(customersIsSatisfied)
     print(customersFacilityAllocated)
+    """
 
-    return sumTotal, numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts
-
-def transpose_list_of_lists(lst):
-    transposed = [list(row) for row in zip(*lst)]
-    return transposed
-
-
-def grasp(alfa, numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts):
-    facilities_factor = facilitiesOpeningCost.copy()
-    list_customers = []
-    served_customers = []
-    
-    for x in range(numCustomers):
-        list_customers.append(x)
-
-    random_customers = random.sample(list_customers, k=len(list_customers))
-    sorted_dict_customer = dict(sorted(customersDemand.items(), key=lambda x: x[1]))
-
-    transposed_list = transpose_list_of_lists(transportationCosts)
-    print(transposed_list)
-
-    for x in range(numFacilities):
-        min_cost = min(facilities_factor.values())
-        max_cost = max(facilities_factor.values())
-        diff_cost = max_cost - min_cost
-
-        sorted_dict = dict(sorted(facilities_factor.items(), key=lambda x: x[1]))
-        possible_facilities = {key: value for key, value in sorted_dict.items() if value <= min_cost + alfa * diff_cost}
-        x, value = random.choice(list(possible_facilities.items()))
-        del facilities_factor[x]
-
-        if len(served_customers) < numCustomers:
-            optimal_facility_index = x
-            facilitiesIsOpen[optimal_facility_index] = True
-            sorted_indices = sorted(enumerate(transposed_list[x]), key=lambda x: x[1])
-            for y, value in sorted_indices:
-                if facilitiesCurrentCapacity == 0:
-                    break
-                elif (customersDemand[y] <= facilitiesCurrentCapacity[x] and y not in served_customers):
-                    facilitiesCustomers[x].append(y)
-                    customersIsSatisfied[y] = True
-                    customersFacilityAllocated[y] = x
-                    facilitiesCurrentCapacity[x] -= customersDemand[y]
-                    served_customers.append(y)
-        else:
-            break    
-
-    facilitesTotalCost = {}
-    print(facilitiesOpeningCost)
-    for facility in facilitiesCustomers:
-        somaFacility = 0
-        if facilitiesCustomers[facility]:
-            for customer in facilitiesCustomers[facility]:
-                somaFacility += transportationCosts[customer][facility]
-            somaFacility += facilitiesOpeningCost[facility]
-        facilitesTotalCost[facility]= somaFacility
-
-    sumTotal = 0
-    for facility in facilitesTotalCost:
-        sumTotal += facilitesTotalCost[facility]
-    
-    print(facilitiesCurrentCapacity)
-    print(facilitiesCustomers)
-    print(facilitiesIsOpen)
-    print(customersIsSatisfied)
-    print(customersFacilityAllocated)
-
-    return sumTotal, numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts
+    return sumTotal
 
 def localSearchSolveShift(numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts):
+    start_time = time.time()  # Start the timer
     for customer in range(numCustomers):
         for facility in range(numFacilities):
             if  (facilitiesIsOpen[facility] == False or not facilitiesCustomers[facility] or customersDemand[customer] > facilitiesCurrentCapacity[facility]):
@@ -218,14 +205,19 @@ def localSearchSolveShift(numCustomers, numFacilities, customersDemand, customer
     for facility in facilitesTotalCost:
         sumTotal += facilitesTotalCost[facility]
 
+    """
     print(facilitiesCurrentCapacity)
     print(facilitiesCustomers)
     print(customersIsSatisfied)
     print(customersFacilityAllocated)
+    """
+    elapsed_time = time.time() - start_time
+    #print("Elapsed Time:", elapsed_time, "seconds")
 
     return sumTotal
 
 def localSearchSolveSwaft(numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts):
+    start_time = time.time()  # Start the timer
     pairs_verified = []
     for customer_a in range(numCustomers):
         for customer_b in range(numCustomers):
@@ -272,11 +264,14 @@ def localSearchSolveSwaft(numCustomers, numFacilities, customersDemand, customer
     sumTotal = 0
     for facility in facilitesTotalCost:
         sumTotal += facilitesTotalCost[facility]
-
+    """
     print(facilitiesCurrentCapacity)
     print(facilitiesCustomers)
     print(customersIsSatisfied)
     print(customersFacilityAllocated)
+    """
+    elapsed_time = time.time() - start_time
+    #print("Elapsed Time:", elapsed_time, "seconds")
 
     return sumTotal
 
@@ -325,64 +320,101 @@ def readInstances(filename: str):
                 print(f"!ERROR! Variable not declared: {name_error}")
     return numCustomers, numFacilities, customersDemand,customersIsSatisfied, customersFacilityAllocated, customersTransportationCost, facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportation_costs
 
-
 def main(directory) -> None:
     """
     Run inside 'src' folder
-    """    
-    best_solution = None
-    best_cost = float('inf')
-    solutions = []
-    times_constructive = []
-    times_local_search = []
-
-    #criar alfa, que começa em 10% e vai aumentando
-    #custo minímo e máximo
-    #fazer a diferença 
-    #custo mínimo + diferença * alfa
-    #escolher random entre custo mínimo e custo mínimo + diferença * alfa
-    alfa = 0.05
-    for iteration in range(200):
-        # Construct a random solution
-        if iteration % 10 == 0:
-            alfa += alfa
-
-        time_constructive_start = perf_counter()
-        numCustomers, numFacilities, customersDemand,customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts = readInstances(os.path.join("..", "instances", "formatted",
-                                                                                  "Lib_1", "p2"))
-        
-        time_constructive_end = perf_counter()
-        time_constructive = (time_constructive_end - time_constructive_start)*1000
-        solution, numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts = grasp(alfa, numCustomers, numFacilities, customersDemand,customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts)
-        solution_constructive = solution
-        times_constructive.append(time_constructive)
-        
-        time_local_shift_start = perf_counter()
-        solution2 = localSearchSolveShift(numCustomers, numFacilities, customersDemand,customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts)
-        time_local_shift_end = perf_counter()
-        time_local_shift = (time_local_shift_end - time_local_shift_start)*1000
-        times_local_search.append(time_local_shift)
-        solutions.append(solution2)    
+    """
+    customers  = []
+    facilities = []
+    newFiles = []
     
-    best_cost = min(solutions)
-    min_index = solutions.index(best_cost)
-    time_constructive_best_cost = times_constructive[min_index]
-    time_local_search_best_cost = times_local_search[min_index]
+    for path, subdirs, files in os.walk(directory):
+        files.remove('os')
+        files = (sorted(files, key=lambda s: int(re.search(r'\d+', s).group())))
+        nameSheet = path.split('/')[1]
+        result_constructive = []
+        result_local_swaft = []
+        result_local_shift = []
+        time_result_constructive = []
+        time_result_local_shift = []
+        time_result_local_swaft = []
+        for name in files:
+            nameModel = nameSheet+name
+            numCustomers, numFacilities, customersDemand,customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts = readInstances(os.path.join(path, name))
+            print(name)
+            time_constructive_start = perf_counter()
+            solution = solve(numCustomers, numFacilities, customersDemand,customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts)
+            time_constructive_end = perf_counter()
+            time_constructive = (time_constructive_end - time_constructive_start)*1000
+            time_local_shift_start = perf_counter()
+            solution2 = localSearchSolveShift(numCustomers, numFacilities, customersDemand,customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts)
+            time_local_shift_end = perf_counter()
+            time_local_shift = (time_local_shift_end - time_local_shift_start)*1000
+            time_local_swaft_start = perf_counter()
+            solution3 = localSearchSolveSwaft(numCustomers, numFacilities, customersDemand,customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts)
+            time_local_swaft_end = perf_counter()
+            time_local_swaft = (time_local_swaft_end - time_local_swaft_start)*1000
+            
+            newFiles.append(name)
+            result_constructive.append(solution)
+            print(solution)
+            print(result_constructive)
+            result_local_shift.append(solution2)
+            result_local_swaft.append(solution3)
+            time_result_constructive.append(time_constructive)
+            time_result_local_shift.append(time_local_shift)
+            time_result_local_swaft.append(time_local_swaft)
+            customers.append(numCustomers)
+            facilities.append(numFacilities)
+
+    for path, subdirs, files in os.walk(directory):
+        expectedResults = []
+        for name in files:
+            if name == 'os':
+                with open(os.path.join(path, name), "r") as lib_file:
+                    for index, row in enumerate(lib_file):
+                        expectedResults.append(float(row.split()[0]))
+
     
-    print(solution_constructive)
-    print(best_cost)
-    print(time_constructive_best_cost)
-    print(time_local_search_best_cost)
+    workbook = xlsxwriter.Workbook('../OutputsHeuristics/'+str(path.split("/",1)[1])+'.xlsx') 
+    worksheet = workbook.add_worksheet(nameSheet)
+    worksheet.write('A1', '#')
+    worksheet.write('B1', '|I|-|J|')
+    worksheet.write('C1', 'Z*')
+    worksheet.write('D1', 'Z Constructive')
+    worksheet.write('E1', 'Z Local Search Shift')
+    worksheet.write('F1', 'Z Local Search Swaft')
+    worksheet.write('G1', 'Gap Constructive')
+    worksheet.write('H1', 'Gap Local Search Shift')
+    worksheet.write('I1', 'Gap Local Search Swaft')
+    worksheet.write('J1', 'Time Constructive')
+    worksheet.write('K1', 'Time Local Search Shift')
+    worksheet.write('L1', 'Time Local Search Swaft')
 
+    row = 1
+    column = 0
+    # iterating through content list
+    for i in range(len(expectedResults)):
+        worksheet.write(row, column, newFiles[i])
+        worksheet.write(row, column+1, "{}-{}".format(facilities[i],customers[i]))
+        worksheet.write(row, column+2, expectedResults[i])
+        worksheet.write(row, column+3, result_constructive[i])
+        worksheet.write(row, column+4, result_local_shift[i])
+        worksheet.write(row, column+5, result_local_swaft[i])
+        worksheet.write(row, column+6, (abs(expectedResults[i]-result_constructive[i])/expectedResults[i]) * 100)
+        worksheet.write(row, column+7, (abs(expectedResults[i]-result_local_shift[i])/expectedResults[i]) * 100)
+        worksheet.write(row, column+8, (abs(expectedResults[i]-result_local_swaft[i])/expectedResults[i]) * 100)
+        worksheet.write(row, column+9, time_result_constructive[i])
+        worksheet.write(row, column+10, time_result_local_shift[i])
+        worksheet.write(row, column+11, time_result_local_swaft[i])
 
-    return best_cost
-
+        row += 1
+    workbook.close()
     
 if __name__ == "__main__":
     for path, subdirs, files in os.walk(os.path.join("..", "instances", "formatted")):
-        if path.split('..\\instances\\')[1].replace('\\','/') == 'formatted/Lib_1':
-            #print(os.path.join("..", "instances", path.split('..\\instances\\')[1].replace('\\','/')))
+        if path.split('..\\instances\\')[1].replace('\\','/') == 'formatted/Lib_5':
             main(os.path.join("..", "instances", path.split('..\\instances\\')[1].replace('\\','/')))
-
-
+            #print((os.path.join("..", "instances", path.split('..\\instances\\')[1].replace('\\','/'))))
+            
 
