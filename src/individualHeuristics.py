@@ -7,40 +7,23 @@ import numpy as np
 import time
 from time import perf_counter
 
-"""
-Generates a random solution to to a given instance of a uncapacitated facility location problem 
-First select and open a random number of facilities 
-Then extract a solution array from the open set of facilities
-
-Parameters
-    f: Number of facilities in problem
-    c: Number of customers in problem
-    d: 2D Array of distances 
-Returns 
-    Array of length c with entries in range f. Corresponds to selected facility for customer
-Description 
-    Takes problem input instances and randomly generates a feasible solution 
-"""
 def solve(numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts):
     facilities_factor = []
     served_customers = []
     for x in range(numFacilities):
         facilities_factor.append(facilitiesOpeningCost[x]/facilitiesInitialCapacity[x])
 
-    for x in facilitiesOpeningCost:
+    for x in sorted(range(len(facilities_factor)), key=lambda k: facilities_factor[k]):
         if len(served_customers) < numCustomers:
-            optimal_facility_index = np.argmin(facilities_factor)
-            facilities_factor[optimal_facility_index] += 100
-            facilities_factor[optimal_facility_index] *= 100
-            facilitiesIsOpen[optimal_facility_index] = True
+            facilitiesIsOpen[x] = True
             for y in customersTransportationCost:
                 if facilitiesCurrentCapacity == 0:
                     break
-                elif (customersDemand[y] <= facilitiesCurrentCapacity[optimal_facility_index] and y not in served_customers):
-                    facilitiesCustomers[optimal_facility_index].append(y)
+                elif (customersDemand[y] <= facilitiesCurrentCapacity[x] and y not in served_customers):
+                    facilitiesCustomers[x].append(y)
                     customersIsSatisfied[y] = True
-                    customersFacilityAllocated[y] = optimal_facility_index
-                    facilitiesCurrentCapacity[optimal_facility_index] -= customersDemand[y]
+                    customersFacilityAllocated[y] = x
+                    facilitiesCurrentCapacity[x] -= customersDemand[y]
                     served_customers.append(y)
         else:
             break
@@ -71,103 +54,6 @@ def solve(numCustomers, numFacilities, customersDemand, customersIsSatisfied, cu
 def findMinimumTransportClient(transportationCosts, clientIndex):
     minIndex = transportationCosts[clientIndex].index(min(transportationCosts[clientIndex]))
     return minIndex
-
-def greedy(numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts):
-    facilities_factor = []
-    list_customers = []
-    served_customers = []
-    for x in range(numFacilities):
-        facilities_factor.append(x)
-    
-    for x in range(numCustomers):
-        list_customers.append(x)
-
-    random_customers = random.sample(list_customers, k=len(list_customers))
-
-    sorted_dict = dict(sorted(facilitiesOpeningCost.items(), key=lambda x: x[1]))
-
-    sorted_dict_customer = dict(sorted(customersDemand.items(), key=lambda x: x[1]))
-    for x, value in sorted_dict.items():
-        if len(served_customers) < numCustomers:
-            optimal_facility_index = x
-            facilitiesIsOpen[optimal_facility_index] = True
-            for y in range(numCustomers):   
-                if facilitiesCurrentCapacity == 0:
-                    break
-                if (customersDemand[y] <= facilitiesCurrentCapacity[x] and y not in served_customers):
-                    facilitiesCustomers[x].append(y)
-                    customersIsSatisfied[y] = True
-                    customersFacilityAllocated[y] = x
-                    facilitiesCurrentCapacity[x] -= customersDemand[y]
-                    served_customers.append(y)
-        else:
-            break
-    
-
-    facilitesTotalCost = {}
-    for facility in facilitiesCustomers:
-        somaFacility = 0
-        if facilitiesCustomers[facility]:
-            for customer in facilitiesCustomers[facility]:
-                somaFacility += transportationCosts[customer][facility]
-            somaFacility += facilitiesOpeningCost[facility]
-        facilitesTotalCost[facility]= somaFacility
-
-    sumTotal = 0
-    for facility in facilitesTotalCost:
-        sumTotal += facilitesTotalCost[facility]
-    
-    print(facilitiesCurrentCapacity)
-    print(facilitiesCustomers)
-    print(facilitiesIsOpen)
-    print(customersIsSatisfied)
-    print(customersFacilityAllocated)
-
-    return sumTotal
-
-
-def sol(numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts):
-    served_customers = []
-
-    sorted_dict = dict(sorted(facilitiesOpeningCost.items(), key=lambda x: x[1]))
-
-    for j in range(numCustomers):
-        min_cost = float('inf')
-        selected_facility = -1
-
-        # Find the facility with the minimum transportation cost
-        for i in range(numFacilities):
-            if i not in served_customers and facilitiesCurrentCapacity[i] >= customersDemand[j]:
-                cost = transportationCosts[j][i]
-                if cost < min_cost:
-                    min_cost = cost
-                    facilitiesCustomers[i].append(j)
-                    customersIsSatisfied[j] = True
-                    customersFacilityAllocated[i] = j
-                    facilitiesCurrentCapacity[i] -= customersDemand[j]
-                    served_customers.append(j)
-    
-    facilitesTotalCost = {}
-    for facility in facilitiesCustomers:
-        somaFacility = 0
-        #print(facilitiesCustomers[facility])
-        if facilitiesCustomers[facility]:
-            for customer in facilitiesCustomers[facility]:
-                somaFacility += transportationCosts[customer][facility]
-            somaFacility += facilitiesOpeningCost[facility]
-        facilitesTotalCost[facility]= somaFacility
-
-    sumTotal = 0
-    for facility in facilitesTotalCost:
-        sumTotal += facilitesTotalCost[facility]
-    
-    print(facilitiesCurrentCapacity)
-    print(facilitiesCustomers)
-    print(facilitiesIsOpen)
-    print(customersIsSatisfied)
-    print(customersFacilityAllocated)
-
-    return sumTotal
 
 def localSearchSolveShift(numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts):
     start_time = time.time()  # Start the timer
