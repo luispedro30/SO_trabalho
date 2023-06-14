@@ -7,7 +7,7 @@ import numpy as np
 import time
 from time import perf_counter
 
-def solve(numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts):
+def constructHeuristic(numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts):
     facilities_factor = []
     served_customers = []
     for x in range(numFacilities):
@@ -208,7 +208,7 @@ def main(directory) -> None:
                                                                                   "Lib_1", "p1"))
     
     time_constructive_start = perf_counter()
-    solution = solve(numCustomers, numFacilities, customersDemand,customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts)
+    solution = constructHeuristic(numCustomers, numFacilities, customersDemand,customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts)
     print(solution)
     time_constructive_end = perf_counter()
     time_constructive = (time_constructive_end - time_constructive_start)*1000

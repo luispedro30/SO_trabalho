@@ -6,21 +6,7 @@ import random
 import numpy as np
 from time import perf_counter
 
-"""
-Generates a random solution to to a given instance of a uncapacitated facility location problem 
-First select and open a random number of facilities 
-Then extract a solution array from the open set of facilities
-
-Parameters
-    f: Number of facilities in problem
-    c: Number of customers in problem
-    d: 2D Array of distances 
-Returns 
-    Array of length c with entries in range f. Corresponds to selected facility for customer
-Description 
-    Takes problem input instances and randomly generates a feasible solution 
-"""
-def solve(numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts):
+def constructHeuristic(numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts):
     facilities_factor = []
     served_customers = []
     for x in range(numFacilities):
@@ -67,65 +53,12 @@ def solve(numCustomers, numFacilities, customersDemand, customersIsSatisfied, cu
 
     return sumTotal, numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts
 
-def greedy(alfa, numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts):
-    facilities_factor = []
-    list_customers = []
-    served_customers = []
-    for x in range(numFacilities):
-        facilities_factor.append(x)
-    
-    for x in range(numCustomers):
-        list_customers.append(x)
-
-    random_customers = random.sample(list_customers, k=len(list_customers))
-
-    sorted_dict = dict(sorted(facilitiesOpeningCost.items(), key=lambda x: x[1]))
-
-    for x, value in sorted_dict.items():
-        if len(served_customers) < numCustomers:
-            optimal_facility_index = x
-            facilitiesIsOpen[optimal_facility_index] = True
-            for y in random_customers:
-                if facilitiesCurrentCapacity == 0:
-                    break
-                elif (customersDemand[y] <= facilitiesCurrentCapacity[x] and y not in served_customers):
-                    facilitiesCustomers[x].append(y)
-                    customersIsSatisfied[y] = True
-                    customersFacilityAllocated[y] = x
-                    facilitiesCurrentCapacity[x] -= customersDemand[y]
-                    served_customers.append(y)
-        else:
-            break
-    
-
-    facilitesTotalCost = {}
-    for facility in facilitiesCustomers:
-        somaFacility = 0
-        #print(facilitiesCustomers[facility])
-        if facilitiesCustomers[facility]:
-            for customer in facilitiesCustomers[facility]:
-                somaFacility += transportationCosts[customer][facility]
-            somaFacility += facilitiesOpeningCost[facility]
-        facilitesTotalCost[facility]= somaFacility
-
-    sumTotal = 0
-    for facility in facilitesTotalCost:
-        sumTotal += facilitesTotalCost[facility]
-    
-    print(facilitiesCurrentCapacity)
-    print(facilitiesCustomers)
-    print(facilitiesIsOpen)
-    print(customersIsSatisfied)
-    print(customersFacilityAllocated)
-
-    return sumTotal, numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts
-
 def transpose_list_of_lists(lst):
     transposed = [list(row) for row in zip(*lst)]
     return transposed
 
 
-def grasp(alfa, numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts):
+def graspConstructive(alfa, numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts):
     facilities_factor = facilitiesOpeningCost.copy()
     list_customers = []
     served_customers = []
@@ -176,14 +109,6 @@ def grasp(alfa, numCustomers, numFacilities, customersDemand, customersIsSatisfi
     sumTotal = 0
     for facility in facilitesTotalCost:
         sumTotal += facilitesTotalCost[facility]
-    
-    """
-    print(facilitiesCurrentCapacity)
-    print(facilitiesCustomers)
-    print(facilitiesIsOpen)
-    print(customersIsSatisfied)
-    print(customersFacilityAllocated)
-    """
 
     return sumTotal, numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts
 
@@ -362,7 +287,7 @@ def main(directory) -> None:
                 print(numCustomers)
                 time_constructive_end = perf_counter()
                 time_constructive = (time_constructive_end - time_constructive_start)*1000
-                solution, numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts = grasp(alfa, numCustomers, numFacilities, customersDemand,customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts)
+                solution, numCustomers, numFacilities, customersDemand, customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts = graspConstructive(alfa, numCustomers, numFacilities, customersDemand,customersIsSatisfied, customersFacilityAllocated, customersTransportationCost,facilitiesInitialCapacity,facilitiesCurrentCapacity, facilitiesIsOpen, facilitiesOpeningCost, facilitiesCustomers, transportationCosts)
                 solution_constructive = solution
                 print(solution_constructive)
                 times_constructive.append(time_constructive)
